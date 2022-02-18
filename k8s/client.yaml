@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: default
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    spec:
+      containers:
+        - name: api
+          image: docker.io/braginox/dapr-acl-policy-bug:client
+          imagePullPolicy: "Always"
+    metadata:
+      labels:
+        app: client
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "client"
+        dapr.io/app-protocol: "grpc"
+        dapr.io/config: "clientconfig"
+
+---
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: clientconfig
+spec:
+  features:
+    - name: proxy.grpc
+      enabled: true

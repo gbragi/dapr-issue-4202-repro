@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: default
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    spec:
+      containers:
+        - name: api
+          image: docker.io/braginox/dapr-acl-policy-bug:api
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 80
+    metadata:
+      labels:
+        app: api
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "api"
+        dapr.io/app-protocol: "grpc"
+        dapr.io/app-port: "80"
+        dapr.io/config: "serverconfig"
+
+---
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: serverconfig
+spec:
+  accessControl:
+    defaultAction: deny
+    trustDomain: "public"
+    policies:
+      - appId: client
+        defaultAction: deny
+        trustDomain: "public"
+        namespace: "default"
+        operations:
+          - name: /greet.Greeter/SayHello
+            action: allow
+          - name: /greet.Greeter/SayGoodbye
+            action: allow
+  features:
+    - name: proxy.grpc
+      enabled: true

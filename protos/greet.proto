@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "api";
+
+package greet;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (GreetingRequest) returns (GreetingReply);
+  rpc SayGoodbye (GreetingRequest) returns (GreetingReply);
+}
+
+// The request message containing the user's name.
+message GreetingRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.
+message GreetingReply {
+  string message = 1;
+}
